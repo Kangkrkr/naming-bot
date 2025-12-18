@@ -23,12 +23,15 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
     }
 
     .footer {
       margin-top: 1.5rem;
       font-size: 0.85rem;
       color: #9CA3AF;
+      text-align: center;
     }
 
     .container {
@@ -38,6 +41,7 @@
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 480px;
+      transition: max-width 0.3s ease-in-out, padding 0.3s ease-in-out;
     }
 
     h1 {
@@ -45,6 +49,7 @@
       margin-bottom: 1.5rem;
       font-size: 1.5rem;
       color: var(--primary-color);
+      transition: font-size 0.3s ease-in-out;
     }
 
     .form-group {
@@ -99,11 +104,12 @@
     /* 결과 영역 스타일 */
     #result-area {
       margin-top: 2rem;
-      padding: 1rem;
+      padding: 1.5rem;
       background-color: #F9FAFB;
       border-radius: 8px;
       border: 1px dashed #D1D5DB;
       display: none; /* 초기엔 숨김 */
+      word-break: keep-all; /* 단어 깨짐 방지 */
     }
 
     #result-area.active {
@@ -119,12 +125,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: font-size 0.3s ease-in-out;
     }
 
     .result-reason {
       font-size: 0.9rem;
       color: #4B5563;
       line-height: 1.5;
+      transition: font-size 0.3s ease-in-out;
     }
 
     .copy-btn {
@@ -135,6 +143,8 @@
       border-radius: 4px;
       cursor: pointer;
       color: #6B7280;
+      flex-shrink: 0; /* 복사 버튼이 작아지지 않도록 */
+      margin-left: 1rem;
     }
 
     .copy-btn:hover {
@@ -145,6 +155,41 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 반응형 웹 디자인을 위한 미디어 쿼리 */
+    @media (min-width: 640px) {
+      .container {
+        max-width: 600px;
+        padding: 2.5rem;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .result-name {
+        font-size: 1.6rem;
+      }
+      
+      .result-reason {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        max-width: 700px;
+        padding: 3rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .result-name {
+        font-size: 1.75rem;
+      }
     }
   </style>
 </head>
