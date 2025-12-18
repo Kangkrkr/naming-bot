@@ -21,13 +21,13 @@ public class GeminiNamingAdapter implements AiNamingPort {
     public Mono<String> suggest(NamingType type, String description) {
         return Mono.fromCallable(() -> {
             String prompt = String.format("""
-                Role: Java Expert and Answer with Korean.
+                Role: Java Expert and reason must answer with Korean.
                 Task: Suggest a %s name for "%s".
                 Format: JSON { "name": "...", "reason": "..." } only.
                 """, type.name(), description);
 
             GenerateContentResponse response = client.models.generateContent(
-                    "gemini-2.0-flash-lite", prompt, null
+                    "gemini-2.5-flash", prompt, null
             );
             
             return cleanJson(response.text());
