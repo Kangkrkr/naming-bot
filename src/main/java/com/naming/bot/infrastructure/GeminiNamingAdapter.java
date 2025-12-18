@@ -27,7 +27,7 @@ public class GeminiNamingAdapter implements AiNamingPort {
                 """, type.name(), description);
 
             GenerateContentResponse response = client.models.generateContent(
-                    "gemini-2.5-flash-lite", prompt, null
+                    "gemini-2.0-flash-lite", prompt, null
             );
             
             return cleanJson(response.text());
