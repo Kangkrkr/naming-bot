@@ -1,0 +1,7 @@
+spring :
+  application :
+    name : demo
+
+
+gemini :
+  api-key : ${GEMINI_API_KEY}

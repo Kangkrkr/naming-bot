@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Naming Bot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4F46E5; /* Indigo */
+      --bg-color: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --text-color: #1F2937;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 480px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box; /* 퍼블리셔의 필수 덕목 */
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    button.submit-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button.submit-btn:hover {
+      background-color: #4338CA;
+    }
+
+    button.submit-btn:disabled {
+      background-color: #9CA3AF;
+      cursor: not-allowed;
+    }
+
+    /* 결과 영역 스타일 */
+    #result-area {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #F9FAFB;
+      border-radius: 8px;
+      border: 1px dashed #D1D5DB;
+      display: none; /* 초기엔 숨김 */
+    }
+
+    #result-area.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .result-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .result-reason {
+      font-size: 0.9rem;
+      color: #4B5563;
+      line-height: 1.5;
+    }
+
+    .copy-btn {
+      font-size: 0.8rem;
+      background: none;
+      border: 1px solid #D1D5DB;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #6B7280;
+    }
+
+    .copy-btn:hover {
+      background-color: #E5E7EB;
+      color: var(--text-color);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🤖 AI Naming Bot</h1>
+
+  <div class="form-group">
+    <label for="type">네이밍 타입</label>
+    <select id="type">
+      <option value="variable">변수 (Variable)</option>
+      <option value="method">메소드 (Method)</option>
+      <option value="class">클래스 (Class)</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="desc">역할 설명</label>
+    <input type="text" id="desc" placeholder="예: 사용자의 로그인 여부 확인" autocomplete="off">
+  </div>
+
+  <button class="submit-btn" onclick="requestNaming()" id="btn-submit">
+    이름 지어줘! ✨
+  </button>
+
+  <div id="result-area">
+    <div class="result-name">
+      <span id="output-name"></span>
+      <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+    </div>
+    <div class="result-reason" id="output-reason"></div>
+  </div>
+</div>
+
+<script>
+  async function requestNaming() {
+    const type = document.getElementById('type').value;
+    const desc = document.getElementById('desc').value;
+    const btn = document.getElementById('btn-submit');
+    const resultArea = document.getElementById('result-area');
+    const nameEl = document.getElementById('output-name');
+    const reasonEl = document.getElementById('output-reason');
+
+    // 1. 유효성 검사
+    if (!desc.trim()) {
+      alert("어떤 역할을 하는지 설명해주세요!");
+      document.getElementById('desc').focus();
+      return;
+    }
+
+    // 2. 로딩 상태 변경
+    btn.disabled = true;
+    btn.innerText = "AI가 고민 중입니다... 🤔";
+    resultArea.classList.remove('active');
+
+    try {
+      // 3. API 호출 (이전에 만든 Controller 주소)
+      const response = await fetch('/api/naming', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: type, description: desc })
+      });
+
+      if (!response.ok) throw new Error("Network response was not ok");
+
+      const json = await response.json();
+
+      // 4. 결과 바인딩
+      nameEl.innerText = json.name;
+      reasonEl.innerText = json.reason;
+      resultArea.classList.add('active'); // 애니메이션 효과
+
+    } catch (error) {
+      console.error(error);
+      alert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      // 5. 상태 복구
+      btn.disabled = false;
+      btn.innerText = "이름 지어줘! ✨";
+    }
+  }
+
+  function copyToClipboard() {
+    const text = document.getElementById('output-name').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('복사되었습니다! 📋');
+    });
+  }
+
+  // 엔터키 입력 시 자동 제출
+  document.getElementById("desc").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      requestNaming();
+    }
+  });
+</script>
+</body>
+</html>
